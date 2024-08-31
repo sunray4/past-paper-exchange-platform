@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export default function ExerciseCards(props) {
     return (
-        <div className='flex bg-white rounded-md p-4 m-60 mt-10 mb-10'>
+        <div className='flex bg-[#CDCCCC] rounded-md p-4 m-60 mt-10 mb-10'>
             <div className='w-3/4 p-2'>
             <h1 className='text-2xl font-semibold' >{props.subject} {props.unit} {props.year}</h1>
             <p className='flex space-x-20 mt-2'>

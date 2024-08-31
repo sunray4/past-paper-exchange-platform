@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Nav from './components/Nav'
 import Home from './pages/Home'
-import ShareExercise from './pages/ShareExercise';
+import ShareExercise from './pages/ShareExercise.jsx';
 
 function App() {
 
