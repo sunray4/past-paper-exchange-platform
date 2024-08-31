@@ -11,8 +11,8 @@ export default function ExerciseCards(props) {
             </p>
             </div>
             <div className='flex flex-col items-center justify-center space-y-4'>
-                <button className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Exercise</button>
-                <button className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Answer</button>
+                <button onClick={props.viewEx} className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Exercise</button>
+                <button onClick={props.viewAns} className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Answer</button>
             </div>
         </div>
     );
