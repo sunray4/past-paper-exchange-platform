@@ -17,7 +17,7 @@ export const UploadExercise = async (key, subject, unit, year, teacher, school, 
     }
 
     try {
-        const response = await fetch('http://localhost:5000/submit', {
+        const response = await fetch('http://127.0.0.1:5000/submit', {
             method: 'POST',
             body: formData 
         });

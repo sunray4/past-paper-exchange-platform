@@ -1,41 +1,23 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import request, jsonify
+from config import app, db
+from models import Papers
 
-app = Flask(__name__)
-app.secret_key = "hello"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///papers.sqlite3'
-app.config['SQLALCHEMY_TRACK_NOTIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-class papers(db.Model):
-    _id = db.Column("id", db.Integer, primary_key = True)
-    name = db.Column(db.Text)
-    data = db.Column(db.LargeBinary)
-    filename = db.Column(db.Text)
-    def __init__(self, data, filename):
-        self.data = data
-        self.filename = filename
-        
 
 @app.route("/")
 def home():
     return "Main Flask page here!"
 
-@app.route('/submit', methods=['POST', 'GET'])
+@app.route('/submit', methods=['POST'])
 def submit_data():
     
-    # Get JSON data from the request
-    data = request.json
-
-    # Extract fields from JSON data
-    key = data.get('key')
-    subject = data.get('subject')
-    unit = data.get('unit')
-    year = data.get('year')
-    teacher = data.get('teacher')
-    school = data.get('school')
-    description = data.get('description')
+    key = request.form.get('key')
+    subject = request.form.get('subject')
+    unit = request.form.get('unit')
+    year = request.form.get('year')
+    teacher = request.form.get('teacher')
+    school = request.form.get('school')
+    description = request.form.get('description')
+    file = request.files['file']
 
     # Log the data for debugging
     print(f"Key: {key}")
@@ -49,7 +31,20 @@ def submit_data():
     # Respond with success
     return jsonify({'message': 'Form data received successfully'})
 
-    
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+
+    app.run(debug=True)
+
+
+
+
+
+
+
+
 # @app.route("/submit" , methods=['POST'])
 # def submit():
 #     if request.method == 'POST':
@@ -77,7 +72,3 @@ def submit_data():
 #         data = {"message": message}
 #         return jsonify(data)
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        app.run(debug=True)
