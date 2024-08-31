@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import generateUUID from '../components/uuidKeyGenerator';
 
 export default function ShareExercise() {
   
@@ -8,18 +9,39 @@ export default function ShareExercise() {
   const [teacher, setTeacher] = useState('');
   const [school, setSchool] = useState('');
   const [description, setDescription] = useState('');
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState([]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); 
-    const formData = { "subject":subject, "unit":unit, "year":year, "teacher":teacher, "school":school, "description":description };
+    const key = generateUUID();
+    const formData = { key, subject, unit, year, teacher, school, description };
     console.log('Form Data:', formData);
+    try {
+      const response = await fetch('http://localhost:5000/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        console.log('Form data sent successfully');
+      } else {
+        console.error('Failed to send form data');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert("There was an error in submitting your response. Please try again.")
+    }
+
     setSubject('');
     setUnit("");
     setYear("");
     setTeacher("");
     setSchool("");
-    setDescription("")
+    setDescription("");
+    setFile([]);
   };
 
   return (
@@ -93,7 +115,7 @@ export default function ShareExercise() {
             <input
               type="file"
               id="file-input"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => setFile(Array.from(e.target.files))}
               className='absolute opacity-0 w-0 h-0'
               required
             />

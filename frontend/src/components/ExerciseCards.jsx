@@ -10,8 +10,9 @@ export default function ExerciseCards(props) {
                 <span>{props.teacher}</span>
             </p>
             </div>
-            <div className='w-35 p-3 self-end bg-[#4C4747] text-white rounded-lg'>
-                <button>View Exercise</button>
+            <div className='flex flex-col items-center justify-center space-y-4'>
+                <button className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Exercise</button>
+                <button className='flex items-center justify-center w-35 p-2 self-end bg-[#4C4747] text-white rounded-lg'>View Answer</button>
             </div>
         </div>
     );
