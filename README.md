@@ -7,10 +7,10 @@ Run the following terminal commands to run the project:
 3. % cd ../backend
 4. % pip install flask Flask-SQLAlchemy flask-cors
 5. % flask shell
-6. >>from config import app, db
-7. >>with app.app_context():
-8. >>db.drop_all()
-9. >>db.create_all()
-10. >>exit()
+6. from config import app, db
+7. with app.app_context():
+8. db.drop_all()
+9. db.create_all()
+10. exit()
 11. % cd ../frontend
 12. % npm run
