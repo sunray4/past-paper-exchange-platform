@@ -1,4 +1,4 @@
-export const UploadExercise = async (key, subject, unit, year, teacher, school, description, pdfBlob) => {
+export const UploadExercise = async (key, subject, unit, year, teacher, school, description, exPDF, ansPDF) => {
     const formData = new FormData();
     // formData.append('file', pdfBlob, 'doc.pdf'); //`${key}.pdf`
 
@@ -10,9 +10,15 @@ export const UploadExercise = async (key, subject, unit, year, teacher, school, 
     formData.append('school', school);
     formData.append('description', description);
     try {
-        formData.append('file', pdfBlob, `${key}.pdf`);
+        formData.append('exPDF', exPDF, `${key}-Ex.pdf`);
     } catch {
-        console.log('Invalid pdfBlob');
+        console.log('Invalid exPDF');
+        return;
+    }
+    try {
+        formData.append('ansPDF', ansPDF, `${key}-Ans.pdf`);
+    } catch {
+        console.log('Invalid ansPDF');
         return;
     }
 

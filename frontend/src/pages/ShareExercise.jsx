@@ -210,25 +210,38 @@ export default function EditAndShareExercise() {
     };
      
 
-  const handleSubmitButtonClick = () => {
-    if (submitButtonRef.current) {
-      submitButtonRef.current.click();
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const key = generateUUID();
-    const ansPDF = await generatePDF(images);
-    const exPDF = await generatePDF(imgEdited);
-
-    try {
-      await UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF);
-      navigate('/'); // Redirect after successful upload
-    } catch (error) {
-      console.log("Error running upload exercise", error);
-    }
-  };
+    const handleSubmitButtonClick = () => {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+    };
+  //   const savePDFToRepo = async (pdfBlob) => {
+  //     const fileName = 'yourPDFName.pdf';
+  //     const link = document.createElement('a');
+  //     link.href = URL.createObjectURL(pdfBlob);
+  //     link.download = fileName;
+  //     link.click();
+  //     URL.revokeObjectURL(link.href);
+  // };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      const key = generateUUID();
+      console.log(images);
+      console.log(imgEdited);
+      const ansPDF = await generatePDF(images);
+      const exPDF = await generatePDF(imgEdited);
+  
+      console.log(ansPDF);
+      console.log(exPDF);
+      // savePDFToRepo(exPDF);
+  
+      try {
+        await UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF);
+        navigate('/'); // Redirect after successful upload
+      } catch (error) {
+        console.log("Error running upload exercise", error);
+      }
+    };
 
 
   return (
@@ -250,7 +263,7 @@ export default function EditAndShareExercise() {
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
           </div>
-          <div className='text-base mb-6 text-center'>
+          <div className='text-base text-center'>
             <input
               type="file"
               id="file-input"
@@ -270,10 +283,12 @@ export default function EditAndShareExercise() {
           <button ref={submitButtonRef} type="submit" className='hidden'>Submit</button>
         </form>
         <div className='flex flex-wrap justify-center items-center gap-4 mt-5'>
-        {images.length > 0 && (
-          <div>
+          
+        {images.length > 0 && (         
+          <div className=' mt-5 mb-5'>
+            <p className='w-full text-white w-full m-4 text-center mt-0'>Please <span className='font-semibold text-[#FDF99F]'>select all questions and supplementary figures</span> in each image by <span className='font-semibold text-[#FDD29F]'>right-clicking on the top left corner & bottom right corner </span>  consecutively. Select <span className='font-bold text-[#FD9F9F]'>Apply Changes</span> after selecting all questions on the image. <span className='font-bold text-[#FD9FF9]'>Submit</span> after applying changes to all images.</p>
             {images.map((imgSrc, index) => (
-              <div key={index} className='relative'>
+              <div key={index} className='relative mt-5'>
                 <canvas
                   ref={el => canvasRefs.current[index] = el}
                   width="500"
@@ -289,14 +304,15 @@ export default function EditAndShareExercise() {
                   height="500"
                   style={{ border: '1px solid #000', position: 'absolute', top: 0, left: 0 }}
                 />
-                <button onClick={() => applyChanges(index)}>Apply Changes</button>
+                 <button onClick={() => applyChanges(index)} className="w-full bg-[#6459DE] text-white p-2 rounded cursor-pointer hover:bg-[#8B86CA] mt-5">Apply Changes</button>
               </div>
             ))}
           </div>
         )}
         </div>
+        <button onClick={handleSubmitButtonClick} type="submit" className='w-full bg-[#7481FF] text-white py-2 rounded-md hover:bg-[#8F97E0]'>Submit</button>
       </div>
-      <button onClick={handleSubmitButtonClick} type="submit" className='w-full bg-[#7481FF] text-white py-2 rounded-md hover:bg-[#8F97E0]'>Submit</button>
+      
     </div>
   );
 }
