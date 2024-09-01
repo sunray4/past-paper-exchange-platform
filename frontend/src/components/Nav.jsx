@@ -6,7 +6,7 @@ export default function Nav() {
         <nav className="flex justify-between items-center p-4 bg-[#1E1E1E] opacity-75 text-white shadow-md">
         <div className="flex items-center justify-center space-x-3">
             <img src="rh-icon-white.webp" alt="logo" class="w-7 h-7" />
-            <span className="website-name">Past Paper</span>
+            <span className="website-name">Past Paper Portal</span>
                 </div>
                 
 
