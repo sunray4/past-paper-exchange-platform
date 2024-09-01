@@ -63,25 +63,6 @@ def test():
     return "HEY THERE!!"
 
 
-# @app.route('/search/<sub>')
-# def search(sub):
-#     papers = Paper.query.filter(
-#             or_(
-#                 Paper.subject.ilike(f'%{sub}%'),
-#                 Paper.unit.ilike(f'%{sub}%'),
-#                 Paper.year.ilike(f'%{sub}%'),
-#                 Paper.teacher.ilike(f'%{sub}%'),
-#                 Paper.school.ilike(f'%{sub}%'),
-#                 Paper.description.ilike(f'%{sub}%')
-#             )
-#         ).all()
-   
-#     results = [paper.to_dict() for paper in papers]
-#     print("hello!")
-#     return jsonify(results)
-
-
-
 
 @app.route('/download/<downloadkey>/<filetype>')
 def download(downloadkey, filetype):
