@@ -23,9 +23,23 @@ export default function Home() {
 
         fetchPapers();
     }, []);
-    const handleFileClick = async (filename) => {
+
+    const handleExFileClick = async (key) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/download/${filename}`);
+            const response = await fetch(`http://127.0.0.1:5000/download/${key}/ex`);
+            if (!response.ok) {
+                throw new Error(`Error fetching file: ${response.statusText}`);
+            }
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error('Error fetching file:', error);
+        }
+    };
+    const handleAnsFileClick = async (key) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/download/${key}/ans`);
             if (!response.ok) {
                 throw new Error(`Error fetching file: ${response.statusText}`);
             }
@@ -62,7 +76,7 @@ export default function Home() {
         <div className='flex flex-col justify-center'>
         <input onChange={(e) => setSearchQuery(e.target.value)} type="text" placeholder='Search for a past paper from any subject/unit/school/...' value={searchQuery} className='bg-[#ffffff] bg-opacity-20 text-white rounded-xl p-4 mt-10 mb-10 w-2/3 max-w-[800px] mx-auto'></input>
         {filteredPapers.map((filteredPaper) => {
-            return <ExerciseCards key={filteredPaper.key} subject={filteredPaper.subject} unit={filteredPaper.unit} year={filteredPaper.year} teacher={filteredPaper.teacher} school={filteredPaper.school} description={filteredPaper.description} viewEx={() => handleFileClick(filteredPaper.filename)} viewAns={() => handleFileClick(filteredPaper.ans)} />
+            return <ExerciseCards key={filteredPaper.key} subject={filteredPaper.subject} unit={filteredPaper.unit} year={filteredPaper.year} teacher={filteredPaper.teacher} school={filteredPaper.school} description={filteredPaper.description} viewEx={() => handleExFileClick(filteredPaper.key)} viewAns={() => handleAnsFileClick(filteredPaper.key)} />
         })}
         </div>
     );

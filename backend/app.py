@@ -63,30 +63,39 @@ def test():
     return "HEY THERE!!"
 
 
-@app.route('/search/<sub>')
-def search(sub):
-    papers = Paper.query.filter(
-            or_(
-                Paper.subject.ilike(f'%{sub}%'),
-                Paper.unit.ilike(f'%{sub}%'),
-                Paper.year.ilike(f'%{sub}%'),
-                Paper.teacher.ilike(f'%{sub}%'),
-                Paper.school.ilike(f'%{sub}%'),
-                Paper.description.ilike(f'%{sub}%')
-            )
-        ).all()
+# @app.route('/search/<sub>')
+# def search(sub):
+#     papers = Paper.query.filter(
+#             or_(
+#                 Paper.subject.ilike(f'%{sub}%'),
+#                 Paper.unit.ilike(f'%{sub}%'),
+#                 Paper.year.ilike(f'%{sub}%'),
+#                 Paper.teacher.ilike(f'%{sub}%'),
+#                 Paper.school.ilike(f'%{sub}%'),
+#                 Paper.description.ilike(f'%{sub}%')
+#             )
+#         ).all()
    
-    results = [paper.to_dict() for paper in papers]
-    print("hello!")
-    return jsonify(results)
+#     results = [paper.to_dict() for paper in papers]
+#     print("hello!")
+#     return jsonify(results)
 
 
 
 
-@app.route('/download/<downloadkey>')
-def download(downloadkey):
+@app.route('/download/<downloadkey>/<filetype>')
+def download(downloadkey, filetype):
     val= Paper.query.filter_by(key=downloadkey).first()
-    return send_file(BytesIO(val.data), download_name=downloadkey + ".pdf", as_attachment=True)
+    if filetype == 'ex':
+        file_data = val.data
+        download_name = downloadkey + "-Ex.pdf"
+    elif filetype == 'ans':
+        file_data = val.ansdata
+        download_name = downloadkey + "-Ans.pdf"
+    else:
+        return "Invalid file type", 400
+    
+    return send_file(BytesIO(file_data), download_name=download_name, as_attachment=False)
 
 
 @app.route('/clear-database')

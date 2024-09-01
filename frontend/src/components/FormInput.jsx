@@ -9,7 +9,7 @@ export function FormInput({ value, onChange, placeholder, type = 'text', require
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
+        className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center shadow-lg shadow-black-500/40'
       />
     </div>
   );

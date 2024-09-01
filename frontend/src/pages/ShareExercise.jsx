@@ -33,14 +33,19 @@ export default function EditAndShareExercise() {
     images.forEach((imgSrc, index) => {
       const canvas = canvasRefs.current[index];
       const ctx = canvas.getContext("2d");
-      
+  
       const image = new Image();
       image.src = imgSrc;
-      
+  
       image.onload = () => {
+        // Get device pixel ratio for high-DPI screens
+        const ratio = window.devicePixelRatio || 1;
         const proportion = image.width / image.height;
-        canvas.width = 500;
-        canvas.height = 500 / proportion;
+  
+        // // Set canvas dimensions considering device pixel ratio
+        canvas.width = 500 * ratio;
+        canvas.height = (canvas.width / proportion);
+  
         const scaleWidth = canvas.width / image.width;
         const scaleHeight = canvas.height / image.height;
         const scale = Math.min(scaleWidth, scaleHeight);
@@ -52,24 +57,29 @@ export default function EditAndShareExercise() {
         // Clear the canvas and draw the scaled image
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
+  
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+  
+        // Draw the image
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height );
+  
         imgRef.current[index] = image;
-
-
+  
         const canvasInvs = canvasInvsRefs.current[index];
-        canvasRefs.current[index].start = true;
         const ctx2 = canvasInvs.getContext("2d");
+        canvasRefs.current[index].start = true;
+        // Set dimensions and clear the invisible canvas
         canvasInvs.width = canvas.width;
         canvasInvs.height = canvas.height;
         ctx2.fillStyle = "white";
         ctx2.fillRect(0, 0, canvasInvs.width, canvasInvs.height);
         canvasInvs.style.visibility = "hidden";
       };
-
-      
     });
   }, [images]);
+  
 
   const onmousedown = (e, index) => {
     const canvas = canvasRefs.current[index];
@@ -90,64 +100,50 @@ export default function EditAndShareExercise() {
     canvasRefs.current[index].start = !canvasRefs.current[index].start;
 
     if (canvasRefs.current[index].start) {
-      const { element:element, curX:startX, curY:startY } = canvasRefs.current[index].element;
+      const { element:element, curX:startX, curY:startY } = canvasRefs.current[index].elementBool;
       console.log('Start Coordinates:', startX, startY);
       console.log('Current Coordinates:', curX, curY);
-
-      // const width = Math.abs(curX - startX);
-      // const height = Math.abs(curY - startY);
-
-      // // Check if the dimensions are valid
-      // if (width <= 0 || height <= 0) {
-      //     console.error('Invalid width or height for getImageData.');
-      //     return;
-      // }
 
       ctx.beginPath();
       ctx.rect(startX, startY, curX - startX, curY - startY);
       ctx.stroke();
 
       try {
-          // Retrieve image data and put it on the invisible canvas
-          const imageData = ctx.getImageData(startX, startY, curX - startX, curY - startY);
-          ctx2.putImageData(imageData, startX, startY);
+        // Retrieve image data and put it on the invisible canvas
+        const imageData = ctx.getImageData(startX, startY, curX - startX, curY - startY);
+        ctx2.putImageData(imageData, startX < curX ? startX : curX, startY < curY ? startY : curY);
       } catch (error) {
           console.error('Error retrieving image data:', error);
       }
 
       }
       else {
-        canvasRefs.current[index].element = { element, curX, curY };
+        canvasRefs.current[index].elementBool = { element, curX, curY };
       }
+      canvasRefs.current[index].element = { element, curX, curY };
     };
 
     const onmouseup = async (e, index) => {
-      // const canvas = canvasRefs.current[index];
+      const canvas = canvasRefs.current[index];
       // const canvasInvs = canvasInvsRefs.current[index];
       
       // // Declare startX and startY outside the block
       // let startX, startY;
   
       //     // Assign startX and startY from the element
-      //     ({ startX, startY } = canvasRefs.current[index].element);
+      const {element, curX:startX, curY:startY} = canvasRefs.current[index].element;
   
   
-      // if (!canvas || !canvasInvs) return;
+      if (!canvas) return;
   
-      // const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d");
       // const ctx2 = canvasInvs.getContext("2d");
   
-      // // Ensure the canvas has dimensions
-      // if (canvas.width === 0 || canvas.height === 0) {
-      //     console.error('Canvas dimensions are not set.');
-      //     return;
-      // }
-  
-      // const curX = e.nativeEvent.offsetX;
-      // const curY = e.nativeEvent.offsetY;
+      const curX = e.nativeEvent.offsetX;
+      const curY = e.nativeEvent.offsetY;
       
-      // console.log('Start Coordinates:', startX, startY);
-      // console.log('Current Coordinates:', curX, curY);
+      console.log('MouseUp Start Coordinates:', startX, startY);
+      console.log('MouseUp Current Coordinates:', curX, curY);
   
       // setPassCoordinates((prevC) => ([...prevC, {x:curX, y:curY}]));
   
@@ -161,9 +157,9 @@ export default function EditAndShareExercise() {
       //       return;
       //   }
   
-      //   ctx.beginPath();
-      //   ctx.rect(passCoordinates[passCoordinates.length - 2].x, passCoordinates[passCoordinates.length - 2].y, width, height);
-      //   ctx.stroke();
+        ctx.beginPath();
+        ctx.rect(startX, startY, curX - startX, curY - startY);
+        ctx.stroke();
   
       //   try {
       //       // Retrieve image data and put it on the invisible canvas
@@ -237,6 +233,7 @@ export default function EditAndShareExercise() {
   
       try {
         await UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF);
+        alert("Your exercise has been successfully uploaded. Thank you for your submission!")
         navigate('/'); // Redirect after successful upload
       } catch (error) {
         console.log("Error running upload exercise", error);
@@ -247,7 +244,7 @@ export default function EditAndShareExercise() {
   return (
     <div className='flex justify-center items-center min-h-screen p-4'>
       <div className='text-white rounded-md w-full max-w-md p-6 flex flex-col'>
-        <h1 className='text-xl font-bold text-center mb-5'>Upload and Edit Exercise</h1>
+        <h1 className='text-xl font-bold text-center mb-5'>Upload A Past Paper</h1>
         <form onSubmit={handleSubmit} className='flex flex-col'>
         <FormInput value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" required />
           <FormInput value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="Unit" required />
@@ -260,7 +257,7 @@ export default function EditAndShareExercise() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder='Description...'
               rows="3"
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
+              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center shadow-lg shadow-black-500/40'
             />
           </div>
           <div className='text-base text-center'>
@@ -275,7 +272,7 @@ export default function EditAndShareExercise() {
             />
             <label
               htmlFor="file-input"
-              className="w-full bg-[#6459DE] text-white p-2 rounded cursor-pointer hover:bg-[#8B86CA]"
+              className="w-full bg-[#6459DE] text-white p-2 rounded cursor-pointer hover:bg-[#8B86CA] shadow-lg shadow-black-500/40"
             >
               Choose File
             </label>
@@ -310,7 +307,7 @@ export default function EditAndShareExercise() {
           </div>
         )}
         </div>
-        <button onClick={handleSubmitButtonClick} type="submit" className='w-full bg-[#7481FF] text-white py-2 rounded-md hover:bg-[#8F97E0]'>Submit</button>
+        <button onClick={handleSubmitButtonClick} type="submit" className='w-full bg-[#7481FF] text-white py-2 rounded-md hover:bg-[#8F97E0] shadow-lg shadow-black-500/40'>Submit</button>
       </div>
       
     </div>
