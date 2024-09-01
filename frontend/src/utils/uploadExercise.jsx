@@ -21,7 +21,9 @@ export const UploadExercise = async (key, subject, unit, year, teacher, school, 
         console.log('Invalid ansPDF');
         return;
     }
-
+    formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+    });
     try {
         const response = await fetch('http://127.0.0.1:5000/submit', {
             method: 'POST',
