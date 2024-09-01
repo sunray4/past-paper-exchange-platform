@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import generateUUID from '../components/uuidKeyGenerator';
-import { generatePDF } from '../components/generatePDF';
-import { UploadExercise } from '../components/uploadExercise';
+import React, { useState, useEffect } from 'react';
+import generateUUID from '../utils/uuidKeyGenerator.jsx';
+import { generatePDF } from '../utils/generatePDF.jsx';
+import { UploadExercise } from '../utils/uploadExercise.jsx';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function ShareExercise() {
-  
   const [subject, setSubject] = useState('');
   const [unit, setUnit] = useState('');
   const [year, setYear] = useState('');
@@ -12,6 +12,9 @@ export default function ShareExercise() {
   const [school, setSchool] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
+  const [imgEdited, setImgEdited] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   function handleImageChange (e) {
     const selectedImages = Array.from(e.target.files);
@@ -19,13 +22,38 @@ export default function ShareExercise() {
     setImages(imgUrls)
   }
 
+  useEffect(() => {
+    if (location.state?.imgEdited) {
+      setImgEdited(location.state.imgEdited);
+    }
+  }, [location.state]);
+
+  const waitForEditing = () => {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (localStorage.getItem('editingComplete') === 'true') {
+          localStorage.removeItem('editingComplete');
+          clearInterval(interval);
+          resolve();
+        }
+      }, 1000); // Check every second
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     const key = generateUUID();
-    const pdf = await generatePDF(images)
+    const ansPDF = await generatePDF(images)
+    navigate('/edit-image', { state: { images: images } });
+    const editImageUrl = `/edit-image`; 
+    window.open(editImageUrl, '_blank');
+
+    await waitForEditing();
+
+    const exPDF = await generatePDF(imgEdited);
 
     try {
-      UploadExercise(key, subject, unit, year, teacher, school, description, pdf)
+      UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF)
     }
     catch {
       console.log("Error running upload exercise")
