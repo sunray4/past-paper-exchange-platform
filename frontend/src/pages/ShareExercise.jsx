@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import generateUUID from '../utils/uuidKeyGenerator.jsx';
 import { generatePDF } from '../utils/generatePDF.jsx';
 import { UploadExercise } from '../utils/uploadExercise.jsx';
+import { FormInput } from '../components/FormInput.jsx';
 
 export default function EditAndShareExercise() {
   const [subject, setSubject] = useState('');
@@ -152,54 +153,11 @@ export default function EditAndShareExercise() {
       <div className='text-white rounded-md w-full max-w-md p-6 flex flex-col'>
         <h1 className='text-xl font-bold text-center mb-5'>Upload and Edit Exercise</h1>
         <form onSubmit={handleSubmit} className='flex flex-col'>
-          <div className='text-base mb-5'>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder='Subject'
-              required
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
-            />
-          </div>
-          <div className='text-base mb-5'>
-            <input
-              type="text"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-              placeholder='Unit'
-              required
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
-            />
-          </div>
-          <div className='text-base mb-5'>
-            <input
-              type="text"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              placeholder='Year'
-              required
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
-            />
-          </div>
-          <div className='text-base mb-5'>
-            <input
-              type="text"
-              value={teacher}
-              onChange={(e) => setTeacher(e.target.value)}
-              placeholder='Teacher'
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
-            />
-          </div>
-          <div className='text-base mb-5'>
-            <input
-              type="text"
-              value={school}
-              onChange={(e) => setSchool(e.target.value)}
-              placeholder='School'
-              className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-slate-300 text-center'
-            />
-          </div>
+        <FormInput value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" required />
+          <FormInput value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="Unit" required />
+          <FormInput value={year} onChange={(e) => setYear(e.target.value)} placeholder="Year" required />
+          <FormInput value={teacher} onChange={(e) => setTeacher(e.target.value)} placeholder="Teacher" />
+          <FormInput value={school} onChange={(e) => setSchool(e.target.value)} placeholder="School" />
           <div className='text-base mb-5'>
             <textarea
               value={description}
