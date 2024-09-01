@@ -32,32 +32,8 @@ export default function EditImage({imageSources, getNewImgUrl, trackIndex}) { //
         })
     }, [imageSources])
 
-
-    // const image = new Image(); // idk whetehr to get rid of const or not
-    // image.src = {props}; // ex: '../../public/logo192.png'
-    // const canvas = document.getElementById("canvas"); // img then rectangles
-    // const ctx = canvas.getContext("2d");
-    // ctx.strokeStyle = 'rgba(0, 0, 0, 1)'; // setting the colour of rectangle  
-    
-    // make_base(); // putting the image on the canvas
-
-    // const canvasInvis = document.getElementById("canvasInvis"); // invisible/hidden canvas
-    // const ctx2 = canvasInvis.getContext("2d");
-    // ctx2.fillStyle = "white"; 
-    // ctx2.beginPath();
-    // ctx2.rect(0, 0, canvasInvis.width, canvasInvis.height);
-    // ctx2.fill();
-    // canvasInvis.style.visibility = "hidden"; // later set to "none" or "visible"
-    
-    // var startX = 0;
-    // var startY = 0;
-    // var isDrawing = false;
-    // var element = null;
-
     const onmousedown = (e, index) => { // when user presses, is triggered
         const canvas = canvasRefs.current[index];
-        // isDrawing = true;
-        // alert (mouseX + " " + mouseY);
 
         const startX = e.nativeEvent.offsetX;
         const startY = e.nativeEvent.offsetY;
@@ -118,24 +94,6 @@ export default function EditImage({imageSources, getNewImgUrl, trackIndex}) { //
         canvas.style.cursor = "default";
     }
 
-    // method to add picture to canvas
-    // function make_base() {
-    //     base_image = new Image();
-    //     base_image.src = './logo192.png';
-    //     base_image.onload = function(){
-    //         ctx.drawImage(base_image, 0, 0); // pixel it!
-    //     }
-    // }
-    // var wid = 0; // width of img
-    // var hei = 0; // height
-
-    // const img = new Image();
-    // img.onload = function() {
-    //     wid = this.width; 
-    //     hei = this.height;
-    // }
-
-    // apply button, set the first canvas to hidden and set the second to visible
     const applyChanges = (index) => {
         const canvas = canvasRefs.current[index];
         const canvasInvs = canvasInvsRefs.current[index];

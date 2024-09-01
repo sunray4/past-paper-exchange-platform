@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import generateUUID from '../utils/uuidKeyGenerator.jsx';
 import { generatePDF } from '../utils/generatePDF.jsx';
-import { UploadExercise } from '../utils/uploadExercise.jsx';
-import { useNavigate, useLocation } from 'react-router-dom';
+
+import { useNavigate } from 'react-router-dom';
 
 export default function ShareExercise() {
   const [subject, setSubject] = useState('');
@@ -14,58 +14,27 @@ export default function ShareExercise() {
   const [images, setImages] = useState([]);
   const [imgEdited, setImgEdited] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  function handleImageChange (e) {
+  function handleImageChange(e) {
     const selectedImages = Array.from(e.target.files);
     const imgUrls = selectedImages.map(file => URL.createObjectURL(file));
-    setImages(imgUrls)
+    setImages(imgUrls);
   }
 
-  useEffect(() => {
-    if (location.state?.imgEdited) {
-      setImgEdited(location.state.imgEdited);
-    }
-  }, [location.state]);
-
-  const waitForEditing = () => {
-    return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (localStorage.getItem('editingComplete') === 'true') {
-          localStorage.removeItem('editingComplete');
-          clearInterval(interval);
-          resolve();
-        }
-      }, 1000); // Check every second
-    });
-  };
+  // useEffect(() => {
+  //   const imageSources = location.state?.imgEdited || [];
+  //   setImgEdited(imageSources);
+  // }, [location.state]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     const key = generateUUID();
-    const ansPDF = await generatePDF(images)
-    navigate('/edit-image', { state: { images: images } });
-    const editImageUrl = `/edit-image`; 
-    window.open(editImageUrl, '_blank');
+    const ansPDF = await generatePDF(images);
 
-    await waitForEditing();
+    // Navigate to EditImagePage with the images
+    navigate('/edit-image', { state: { images: images, key:key, subject:subject, unit:unit, year:year, teacher:teacher, school:school, description:description, } });
+    window.open('/edit-image');
 
-    const exPDF = await generatePDF(imgEdited);
-
-    try {
-      UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF)
-    }
-    catch {
-      console.log("Error running upload exercise")
-    }
-
-    setSubject('');
-    setUnit("");
-    setYear("");
-    setTeacher("");
-    setSchool("");
-    setDescription("");
-    setImages([]);
   };
 
   return (
@@ -83,7 +52,6 @@ export default function ShareExercise() {
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
           </div>
-
           <div className='text-base mb-5'>
             <input
               type="text"
@@ -94,43 +62,39 @@ export default function ShareExercise() {
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
           </div>
-
           <div className='text-base mb-5'>
             <input
               type="text"
               value={year}
-              placeholder='Year'
               onChange={(e) => setYear(e.target.value)}
+              placeholder='Year'
               required
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
           </div>
-
           <div className='text-base mb-5'>
             <input
               type="text"
               value={teacher}
-              placeholder='Teacher'
               onChange={(e) => setTeacher(e.target.value)}
+              placeholder='Teacher'
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
           </div>
-
           <div className='text-base mb-5'>
             <input
               type="text"
               value={school}
-              placeholder='School'
               onChange={(e) => setSchool(e.target.value)}
+              placeholder='School'
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-slate-300 text-center'
             />
           </div>
-
           <div className='text-base mb-5'>
             <textarea
               value={description}
-              placeholder='Description...'
               onChange={(e) => setDescription(e.target.value)}
+              placeholder='Description...'
               rows="3"
               className='w-full p-2 rounded-md bg-[#ffffff] bg-opacity-20 text-white text-center'
             />
@@ -139,20 +103,19 @@ export default function ShareExercise() {
             <input
               type="file"
               id="file-input"
-              accept="image/*" 
+              accept="image/*"
               multiple
               onChange={handleImageChange}
               className='absolute opacity-0 w-0 h-0'
               required
             />
             <label
-            htmlFor="file-input"
-            className="w-full bg-[#6459DE] text-white p-2 rounded cursor-pointer hover:bg-[#8B86CA]"
-          >
-            Choose File
-          </label>
+              htmlFor="file-input"
+              className="w-full bg-[#6459DE] text-white p-2 rounded cursor-pointer hover:bg-[#8B86CA]"
+            >
+              Choose File
+            </label>
           </div>
-          
           <button type="submit" className='w-full bg-[#7481FF] text-white py-2 rounded-md hover:bg-[#8F97E0]'>Submit</button>
         </form>
       </div>

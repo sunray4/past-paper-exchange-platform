@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
 import EditImage from '../components/EditImage';
-
+import { generatePDF } from '../utils/generatePDF';
+import { UploadExercise } from '../utils/uploadExercise.jsx';
 
 const EditImagePage = () => {
   const location = useLocation();
@@ -9,44 +10,56 @@ const EditImagePage = () => {
   const [imgEdited, setImgEdited] = useState([]);
   const [images, setImages] = useState([]);
   const [index, setIndex] = useState(0);
-
+  const [subject, setSubject] = useState('');
+  const [unit, setUnit] = useState('');
+  const [year, setYear] = useState('');
+  const [teacher, setTeacher] = useState('');
+  const [school, setSchool] = useState('');
+  const [description, setDescription] = useState('');
+  const [key, setKey] = useState('');
 
   useEffect(() => {
-    // Retrieve the state from location
-    const imageSources = location.state?.images || [];
-    setImages(imageSources)
+    const imageSources = location.state?.images || [];   
+    setImages(imageSources);
+    setKey(location.state?.key || '');
+    setSubject(location.state?.subject || '');
+    setUnit(location.state?.unit || '');
+    setYear(location.state?.year || '');
+    setTeacher(location.state?.teacher || '');
+    setSchool(location.state?.school || '');
+    setDescription(location.state?.description || '');
 
-    const processData = async () => {
+  }, [location.state]);
 
-      while (index < images.length) {
-        await new Promise(resolve => setTimeout(resolve, 100)); 
+  useEffect(() => {
+    const processPDFs = async () => {
+      if (index >= images.length) {
+        try {
+          const ansPDF = await generatePDF(images);
+          const exPDF = await generatePDF(imgEdited);
+
+          await UploadExercise(key, subject, unit, year, teacher, school, description, exPDF, ansPDF);
+          navigate('/'); // Redirect after successful upload
+        } catch (error) {
+          console.log("Error running upload exercise", error);
+        }
       }
-
-      // Notify Page A and navigate back
-      navigate('/share-exercise', { state: { imgEdited : imgEdited } });
     };
-    processData();
-  }, [index, images, navigate, imgEdited, location.state]);
 
-  // Handle completion of editing and redirect
-  useEffect(() => {
-    if (index === images.length) {
-      localStorage.setItem('editingComplete', 'true');
-      navigate('/'); // Redirect to a different route after editing is complete
-    }
-    
-  }, [index]);
+    processPDFs();
+  }, [index, images, imgEdited, key, subject, unit, year, teacher, school, description, navigate]);
 
   const getNewImgUrl = (newImgUrl) => {
-    setImgEdited((prevImgUrls) => ([...prevImgUrls, newImgUrl]));
+    setImgEdited(prevImgUrls => ([...prevImgUrls, newImgUrl]));
   }
 
-  const trackIndex = (index) => (setIndex(index));
+  const trackIndex = (newIndex) => {
+    setIndex(newIndex);
+  }
 
   return (
     <div>
       <EditImage imageSources={images} getNewImgUrl={getNewImgUrl} trackIndex={trackIndex} />
-      {/* <button onClick={handleEditingComplete}>Complete Editing</button> */}
     </div>
   );
 };
